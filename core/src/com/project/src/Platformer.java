@@ -70,7 +70,7 @@ public class Platformer extends ApplicationAdapter {
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
-        fixtureDef.density = 0.5f;
+        fixtureDef.density = 10f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.6f; // Make it bounce a little bit
 // Create our fixture and attach it to the body
@@ -109,26 +109,9 @@ public class Platformer extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 
 		batch.begin();
-		batch.draw(bucketImg,bucket.x,bucket.y);
-        for(Rectangle raindrop: rain) {
-            batch.draw(dropImg, raindrop.x, raindrop.y);
-        }
 		batch.end();
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) bucket.x -= 200 * Gdx.graphics.getDeltaTime();
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) bucket.x += 200 * Gdx.graphics.getDeltaTime();
-        if(bucket.x < 0) bucket.x = 0;
-        if(bucket.x > 800 - 64) bucket.x = 800 - 64;
-        if(TimeUtils.nanoTime() - lastDropTime > 1000000000) spawnRaindrop();
-        Iterator<Rectangle> iter = rain.iterator();
-        while(iter.hasNext()) {
-            Rectangle raindrop = iter.next();
-            raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-            if(raindrop.y + 64 < 0) iter.remove();
-            if(raindrop.overlaps(bucket)) {
-                iter.remove();
-            }
-        }
+        debugRenderer.render(world, camera.combined);
 
         world.step(1/45f, 6, 2);
 	}
@@ -140,14 +123,4 @@ public class Platformer extends ApplicationAdapter {
         dropImg.dispose();
         batch.dispose();
 	}
-
-    private void spawnRaindrop() {
-        Rectangle raindrop = new Rectangle();
-        raindrop.x = MathUtils.random(0, 800-64);
-        raindrop.y = 480;
-        raindrop.width = 64;
-        raindrop.height = 64;
-        rain.add(raindrop);
-        lastDropTime = TimeUtils.nanoTime();
-    }
 }
